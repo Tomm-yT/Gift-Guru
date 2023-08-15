@@ -57,11 +57,11 @@ class CustomFailureHandler(targetContext: Context, description: Description) : F
         // androidx.test.espresso.NoMatchingViewException: No views in hierarchy found matching: an instance of android.widget.TextView and view.getText() with or without transformation to match: is "Nehow Ma"
         //androidx.test.espresso.NoMatchingViewException: No views in hierarchy found matching: an instance of android.widget.TextView and view.getText() with or without transformation to match: is "fail"
 
-        if("PerformException: Error performing" in input) {
-            val regex = "Caused by: java.lang.IllegalStateException: No view holder at position:".toRegex()
-            val matchResult = regex.find(input)
-            val viewInfo = matchResult?.groupValues?.get(1)
-            matchText = matchResult?.groupValues?.get(2)?.slug() // Nehow-Ma
+        if("view.getId() is <" in input) {
+            //val regex = """an instance of ([^\s]+) .* with or without transformation to match: is "(.*)"""".toRegex()
+            //val matchResult = regex.find(input)
+            //val viewInfo = matchResult?.groupValues?.get(1)
+            matchText = input.slug()//matchResult?.groupValues?.get(2)?.slug() // Nehow-Ma
         }
 
         // Chris: androidx.test.espresso.NoMatchingViewException: No views in hierarchy found matching: view.getId() is <15 (resource name not found)>
@@ -81,7 +81,7 @@ class CustomFailureHandler(targetContext: Context, description: Description) : F
         //Generates image in data/data instead of /emulator directory
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         val filesDir = context.filesDir
-        val snapshot = File(filesDir, "LOOK-$errorSlug(${matchText ?: "Default"}).png")
+        val snapshot = File(filesDir, "$errorSlug(${matchText ?: "Default"}).png")
         //
 
         //val snapshot = File("$directory/$testClassName", "$testMethodName-$errorSlug(${matchText ?: "Default"}).png")
