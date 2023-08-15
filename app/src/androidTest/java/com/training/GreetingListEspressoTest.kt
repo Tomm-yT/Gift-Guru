@@ -71,7 +71,7 @@ class GreetingListEspressoTest {
 
     }
 
-    @Test
+    //@Test
     fun testTakeScreenShot() {
 
         onView(withId(R.id.recyclerViewRight))

@@ -51,27 +51,53 @@ class CustomFailureHandler(targetContext: Context, description: Description) : F
 
     override fun handle(error: Throwable, viewMatcher: Matcher<View>) {
 
+        val allContents = error.stackTraceToString()
         val input = viewMatcher.toString().split("\n\n")[0]
         var matchText: String? = null
 
+        // John: androidx.test.espresso.NoMatchingViewException: No views in hierarchy found matching: is an instance of androidx.appcompat.widget.AlertDialogLayout
+        if ("is an instance of " in input) {
+            val regex = """an instance of ([^\s]+).*""".toRegex()
+            val matchResult = regex.find(input)
+            val viewInfo = matchResult?.groupValues?.get(1)
+            matchText = viewInfo?.slug() // android.app.Activity
+        }
         // androidx.test.espresso.NoMatchingViewException: No views in hierarchy found matching: an instance of android.widget.TextView and view.getText() with or without transformation to match: is "Nehow Ma"
-        //androidx.test.espresso.NoMatchingViewException: No views in hierarchy found matching: an instance of android.widget.TextView and view.getText() with or without transformation to match: is "fail"
-
-        if("view.getId() is <" in input) {
-            //val regex = """an instance of ([^\s]+) .* with or without transformation to match: is "(.*)"""".toRegex()
-            //val matchResult = regex.find(input)
-            //val viewInfo = matchResult?.groupValues?.get(1)
-            matchText = input.slug()//matchResult?.groupValues?.get(2)?.slug() // Nehow-Ma
+        else if("an instance of" in input) {
+            val regex = """an instance of ([^\s]+) .* with or without transformation to match: is "(.*)"""".toRegex()
+            val matchResult = regex.find(input)
+            val viewInfo = matchResult?.groupValues?.get(1)
+            matchText = matchResult?.groupValues?.get(2)?.slug() // Nehow-Ma
         }
 
         // Chris: androidx.test.espresso.NoMatchingViewException: No views in hierarchy found matching: view.getId() is <15 (resource name not found)>
+//        Chris can you change my logic to this:
+
+        else if("(resource name not found)" in input) {
+            val regex = """<(\d+)""".toRegex()
+            val matchResult = regex.find(input)
+            val numberAfterLessThan = matchResult?.groupValues?.get(1)
+            matchText = "resource_not_found_with_id_$numberAfterLessThan"
+        }
+//        else if("view.getId() is <" in input) {
+//            val regex = """<(\d+)""".toRegex()
+//            val matchResult = regex.find(input)
+//            val numberAfterLessThan = matchResult?.groupValues?.get(1)
+//            matchText = "no_view_with_id_$numberAfterLessThan"
+//        }
 
         // Tom: androidx.test.espresso.PerformException: Error performing 'androidx.test.espresso.contrib.RecyclerViewActions$ActionOnItemAtPositionViewAction@19647cd' on view 'Animations or transitions are enabled on the target device.
+//        else if("No view holder at position" in allContents) {
+        else if("No view holder at position" in allContents) {
+            val regex = """java.lang.IllegalStateException: (No view holder at position: \d+)""".toRegex()
+            val matchResult = regex.find(allContents)
+            matchText = matchResult?.groupValues?.get(1)?.slug()
+        }
+
         // Caused by: java.lang.IllegalStateException: No view holder at position: 11
 
-        // John: junit.framework.AssertionFailedError: Wanted to match 1 intents. Actually matched 0 intents.
-
         Log.d(javaClass.name, "viewMatcher: $viewMatcher")
+
         Log.d(javaClass.name, "error.message: ${error.message}" ?: "No message")
 
 
