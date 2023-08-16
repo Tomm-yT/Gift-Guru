@@ -3,17 +3,27 @@ plugins {
     id 'org.jetbrains.kotlin.android'
 }
 
+ext.kotlinVersion = "1.8.0"
 ext.junitVersion = "5.10.0"
 ext.espressoVersion = "3.5.1"
 
+def propsFile = rootProject.file("app/props.properties")
+def vFile = rootProject.file("app/version.properties")
+
+// Read versionName and versionCode from external file
+def props = new Properties()
+props.load(new FileInputStream(propsFile))
+
+def version = new Properties()
+version.load(new FileInputStream(vFile))
 
 android {
     signingConfigs {
         release {
-            storeFile file('/Users/consultant/Desktop/toms-views-app/view_key')
-            storePassword '123456'
-            keyPassword '123456'
-            keyAlias 'key_view'
+            storeFile file(props.getProperty("signingPath"))
+            storePassword props.getProperty("storePassword")
+            keyPassword props.getProperty("keyPassword")
+            keyAlias props.getProperty("keyAlias")
         }
     }
     namespace 'com.training.recycler'
@@ -23,8 +33,8 @@ android {
         applicationId "com.training.recycler"
         minSdk 24
         targetSdk 33
-        versionCode 1
-        versionName "1.0"
+        versionCode version.getProperty("vCode").toInteger()
+        versionName version.getProperty("vName")
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
