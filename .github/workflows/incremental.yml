@@ -1,9 +1,6 @@
 name: Check and Build New Version Artifacts
 
-on:
-
-  schedule:
-    - cron '50 10 * * *' # Runs every 10:10 AM day(month)/month/week(1=Monday)
+on: push
 
 jobs:
   check_and_build:
