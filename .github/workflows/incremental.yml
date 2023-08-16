@@ -23,7 +23,7 @@ jobs:
       - name: Check for New Version
         id: check_version
         run: |
-          if [ "${{ steps.count_tags.outputs.tag_count }}" -gt VersionCode ]; then
+          if [ "${{ steps.count_tags.outputs.tag_count }}" -gt $VersionCode ]; then
             echo "New version available!"
             echo "New version code: ${{ steps.count_tags.outputs.tag_count }}"
             echo "::set-output name=new_version::true"
@@ -32,12 +32,34 @@ jobs:
             echo "::set-output name=new_version::false"
           fi
 
-      - name: Create New Version
+      - name: Build All Variants
         if: steps.check_version.outputs.new_version == 'true'
-        run: ./gradlew assembleDebug  # Replace with your build command
+        run: ./gradlew assemble
 
-      - name: Upload Full Debug Artifact
+      - name: Upload recyclerStandard Debug APK
+        if: steps.check_version.outputs.new_version == 'true'
         uses: actions/upload-artifact@v3.1.2
         with:
-          name: app-full-debug.apk
-          path: app/full/debug/app-full-debug.apk
+          name: recyclerStandard-debug.apk
+          path: app/build/outputs/apk/recyclerStandard/debug/app-recyclerStandard-debug.apk
+
+      - name: Upload recyclerStandard Release APK
+        if: steps.check_version.outputs.new_version == 'true'
+        uses: actions/upload-artifact@v3.1.2
+        with:
+          name: recyclerStandard-release.apk
+          path: app/build/outputs/apk/recyclerStandard/release/app-recyclerStandard-release.apk
+
+      - name: Upload recyclerPro Debug APK
+        if: steps.check_version.outputs.new_version == 'true'
+        uses: actions/upload-artifact@v3.1.2
+        with:
+          name: recyclerPro-debug.apk
+          path: app/build/outputs/apk/recyclerPro/debug/app-recyclerPro-debug.apk
+
+      - name: Upload recyclerPro Release APK
+        if: steps.check_version.outputs.new_version == 'true'
+        uses: actions/upload-artifact@v3.1.2
+        with:
+          name: recyclerPro-release.apk
+          path: app/build/outputs/apk/recyclerPro/release/app-recyclerPro-release.apk
