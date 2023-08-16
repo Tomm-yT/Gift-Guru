@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity() {
 
             var leftSideSelected = true
 
-            //"Side-picker" switch//
+            //"Side-picker" switch////
             dialogView.findViewById<Switch>(R.id.sidePicker).setOnCheckedChangeListener { _, isChecked ->
                 if (isChecked) {
                     leftSideSelected = false
