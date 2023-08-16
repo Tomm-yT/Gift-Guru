@@ -1,4 +1,4 @@
-package com.training
+package com.training.recycler
 
 import android.content.Context
 import android.util.Log

@@ -1,0 +1,7 @@
+<resources>
+    <!-- Other styles may already be here -->
+
+    <style name="SplashTheme" parent="Theme.AppCompat.NoActionBar">
+        <!-- Customize your splash screen theme here -->
+    </style>
+</resources>

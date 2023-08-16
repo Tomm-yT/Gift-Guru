@@ -1,17 +1,8 @@
-package com.training
+package com.training.recycler
 
-import android.content.ClipData
 import android.os.Bundle
-import android.widget.Spinner
-import android.widget.ArrayAdapter
 import android.widget.TextView
-import android.widget.LinearLayout
-import android.widget.Toast
-import android.widget.Button
-import android.widget.AdapterView
-import android.util.Log
 import android.view.View
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.EditText
@@ -21,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.training.recycler.R
 
 class MainActivity : AppCompatActivity() {
 
