@@ -36,6 +36,9 @@ jobs:
         if: env.new_version == 'true'
         run: ./gradlew assemble
 
+      - name: List All Build Outputs
+        run: ls -R app/build/outputs/
+
       - name: List APK Directory Contents
         run: ls -R app/build/outputs/apk/
 
