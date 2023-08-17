@@ -40,9 +40,6 @@ jobs:
       - name: Set up KVM
         run: sudo apt-get install -y qemu-kvm > /dev/null
 
-      # Setup Android environment
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v2
 
       # List available AVDs
       - name: List AVDs
