@@ -73,4 +73,11 @@ jobs:
       - name: List APKs
         run: ls -R build/outputs/apk/
 
+      - name: Check Current Directory
+        run: pwd
+
+      - name: List Everything
+        run: ls -R
+
+
 
