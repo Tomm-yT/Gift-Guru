@@ -10,11 +10,11 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Set up JDK 17
+      - name: Set up JDK 1.8
         uses: actions/setup-java@v2
         with:
-          java-version: '17'
-          distribution: 'temurin'
+          distribution: 'adopt'
+          java-version: '8'
 
       # Install necessary system dependencies for the Android Emulator
       - name: Install system dependencies
