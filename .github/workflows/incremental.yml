@@ -33,7 +33,7 @@ jobs:
           fi
 
       - name: Build All Variants
-        if: env.new_version == 'true'
+#        if: env.new_version == 'true'
         run: ./gradlew assemble
 
       - name: List All Build Outputs
@@ -43,28 +43,28 @@ jobs:
         run: ls -R app/build/outputs/apk/
 
       - name: Upload recyclerStandard Debug APK
-        if: env.new_version == 'true'
+#        if: env.new_version == 'true'
         uses: actions/upload-artifact@v3.1.2
         with:
           name: recyclerStandard-debug.apk
           path: app/build/outputs/apk/recyclerStandard/debug/app-recyclerStandard-debug.apk
 
       - name: Upload recyclerStandard Release APK
-        if: env.new_version == 'true'
+#        if: env.new_version == 'true'
         uses: actions/upload-artifact@v3.1.2
         with:
           name: recyclerStandard-release.apk
           path: app/build/outputs/apk/recyclerStandard/release/app-recyclerStandard-release.apk
 
       - name: Upload recyclerPro Debug APK
-        if: env.new_version == 'true'
+#        if: env.new_version == 'true'
         uses: actions/upload-artifact@v3.1.2
         with:
           name: recyclerPro-debug.apk
           path: app/build/outputs/apk/recyclerPro/debug/app-recyclerPro-debug.apk
 
       - name: Upload recyclerPro Release APK
-        if: env.new_version == 'true'
+#        if: env.new_version == 'true'
         uses: actions/upload-artifact@v3.1.2
         with:
           name: recyclerPro-release.apk
