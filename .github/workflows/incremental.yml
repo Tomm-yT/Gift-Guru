@@ -9,21 +9,18 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Set up JDK 8 for AVD Manager
+      # Set up Java 8
+      - name: Set up JDK 8
         uses: actions/setup-java@v2
         with:
           distribution: 'adopt'
           java-version: '8'
 
+      # Now run AVD Manager with Java 8
       - name: Run AVD Manager
         run: echo "y" | $ANDROID_HOME/tools/bin/avdmanager list avd
 
-      # If you need Java 11 (or another version) for subsequent steps, you can switch back like this:
-      - name: Set up JDK 11
-        uses: actions/setup-java@v2
-        with:
-          distribution: 'adopt'
-          java-version: '11'
+
 
       # Install necessary system dependencies for the Android Emulator
       - name: Install system dependencies
