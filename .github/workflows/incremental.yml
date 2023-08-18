@@ -106,6 +106,3 @@ jobs:
         with:
           name: recyclerPro-release.apk
           path: app/build/outputs/apk/recyclerPro/release/app-recyclerPro-release.apk
-
-
-
