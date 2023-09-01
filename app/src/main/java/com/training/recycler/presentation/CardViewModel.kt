@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.training.recycler.data.CardDao
+import com.training.recycler.data.ProductResponse
 import com.training.recycler.domain.entities.CardItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -11,17 +12,17 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import com.training.recycler.domain.repositories.CardRepository
-
+import com.training.recycler.domain.usecases.GetProducts
 
 
 @HiltViewModel
 class CardViewModel @Inject constructor(private val repository: CardRepository) : ViewModel() {
 
     private val currentCardItemsRight = MutableLiveData<MutableList<CardItem>?>(mutableListOf(
-        CardItem(text = "Default Right Card", side = "R")
+        CardItem(text = "Default Right Card", side = "R", imageUrl = "TODO")
     ))
     private val currentCardItemsLeft = MutableLiveData<MutableList<CardItem>?>(mutableListOf(
-        CardItem(text = "Default Left Card", side = "L")
+        CardItem(text = "Default Left Card", side = "L", imageUrl = "TODO")
     ))
 
     //Adds a Right
@@ -69,6 +70,13 @@ class CardViewModel @Inject constructor(private val repository: CardRepository) 
         viewModelScope.launch(Dispatchers.IO) {
             repository.clearAllCards()
         }
+    }
+
+
+    suspend fun fetchProducts(): List<ProductResponse> {
+        //val products = repository.fetchProducts()
+        // Update the UI
+        return repository.fetchProducts()
     }
 
 }

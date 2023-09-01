@@ -1,6 +1,7 @@
 package com.training.recycler.dependancy
 
 import com.training.recycler.data.CardDao
+import com.training.recycler.data.network.ProductService
 import com.training.recycler.data.repositories.CardRepositoryImpl
 import com.training.recycler.domain.repositories.CardRepository
 import dagger.Module
@@ -16,6 +17,7 @@ object RepositoryModule {
     @Provides
     @Singleton
     fun provideCardRepository(
-        cardDao: CardDao
-    ): CardRepository = CardRepositoryImpl(cardDao)
+        cardDao: CardDao,
+        service: ProductService // Added productService as a parameter
+    ): CardRepository = CardRepositoryImpl(cardDao, service) // Passed productService to CardRepositoryImpl
 }

@@ -8,4 +8,5 @@ data class CardItem(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val text: String,
     val side: String,
+    val imageUrl: String
 )

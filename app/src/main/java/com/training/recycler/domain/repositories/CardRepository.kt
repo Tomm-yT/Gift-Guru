@@ -1,5 +1,6 @@
 package com.training.recycler.domain.repositories
 
+import com.training.recycler.data.ProductResponse
 import com.training.recycler.domain.entities.CardItem
 
 interface CardRepository {
@@ -7,4 +8,7 @@ interface CardRepository {
     suspend fun getAllRightCards(): List<CardItem>
     suspend fun getAllLeftCards(): List<CardItem>
     suspend fun clearAllCards()
+    suspend fun fetchProducts(): List<ProductResponse>
+
+
 }
