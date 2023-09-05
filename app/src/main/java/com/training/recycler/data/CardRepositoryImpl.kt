@@ -23,12 +23,9 @@ class CardRepositoryImpl @Inject constructor(private val cardDao: CardDao, priva
         cardDao.insert(card)
     }
 
-    override suspend fun getAllRightCards(): List<CardItem> {
-        return cardDao.getAllCards().filter { it.side == "R" }
-    }
 
     override suspend fun getAllLeftCards(): List<CardItem> {
-        return cardDao.getAllCards().filter { it.side == "L" }
+        return cardDao.getAllCards()
     }
 
     override suspend fun clearAllCards() {
@@ -36,20 +33,23 @@ class CardRepositoryImpl @Inject constructor(private val cardDao: CardDao, priva
     }
 
     override suspend fun fetchProducts(): List<ProductResponse> {
-            val response = service.getProducts()
-            //emit(UIState.Loading(true))
-//            if(response.isSuccessful){
-//                response.body()?.let{
-//                    emit(UIState.Loading(false))
-//                    delay(500)
-//                    emit(UIState.Success(it))
-//                } ?: emit(UIState.Failure(response.message()))
-//            }else{
-//                emit(UIState.Loading(false))
-//                emit(UIState.Failure(response.message()))
-//            }
+        return service.getAllProducts()
+    }
 
-        return service.getProducts()
+    override suspend fun fetchJewelery(): List<ProductResponse> {
+        return service.getJewelery()
+    }
+
+    override suspend fun fetchElectronics(): List<ProductResponse> {
+        return service.getElectronics()
+    }
+
+    override suspend fun fetchWomensCloths(): List<ProductResponse> {
+        return service.getWomensClothing()
+    }
+
+    override suspend fun fetchMensCloths(): List<ProductResponse> {
+        return service.getMensClothing()
     }
 }
 

@@ -9,7 +9,21 @@ interface ProductService {
 
 
     @GET("products")
-    suspend fun getProducts(): List<ProductResponse>
+    suspend fun getAllProducts(): List<ProductResponse>
+
+    @GET("products/category/jewelery")
+    suspend fun getJewelery(): List<ProductResponse>
+
+    @GET("products/category/electronics")
+    suspend fun getElectronics(): List<ProductResponse>
+
+    @GET("products/category/men's clothing")
+    suspend fun getMensClothing(): List<ProductResponse>
+
+    @GET("products/category/women's clothing")
+    suspend fun getWomensClothing(): List<ProductResponse>
+
+
 
 //    @GET(Network.ENDPOINT)
 //    suspend fun getProducts(

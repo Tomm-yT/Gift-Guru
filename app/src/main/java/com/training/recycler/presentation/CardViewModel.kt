@@ -1,5 +1,7 @@
 package com.training.recycler.presentation
 
+import android.annotation.SuppressLint
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -12,29 +14,28 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import com.training.recycler.domain.repositories.CardRepository
+import com.training.recycler.domain.repositories.ProductsRepository
 import com.training.recycler.domain.usecases.GetProducts
+import kotlinx.coroutines.CoroutineScope
 
 
+@SuppressLint("SuspiciousIndentation")
 @HiltViewModel
 class CardViewModel @Inject constructor(private val repository: CardRepository) : ViewModel() {
 
-    private val currentCardItemsRight = MutableLiveData<MutableList<CardItem>?>(mutableListOf(
-        CardItem(text = "Default Right Card", side = "R", imageUrl = "TODO")
-    ))
+
     private val currentCardItemsLeft = MutableLiveData<MutableList<CardItem>?>(mutableListOf(
-        CardItem(text = "Default Left Card", side = "L", imageUrl = "TODO")
+        CardItem(text = "Default Left Card", imageUrl = "TODO")
     ))
 
-    //Adds a Right
-    fun addCardRight(card: CardItem) {
-        viewModelScope.launch(Dispatchers.IO) {
-            repository.addCard(card)
-            val updatedList = currentCardItemsRight.value?.toMutableList()
-            updatedList?.add(card)
-            withContext(Dispatchers.Main) {
-                currentCardItemsRight.postValue(updatedList)
-            }
-        }
+    suspend fun loadProductsToRepo(){
+        Log.d("", "Fetching now!!!!")
+        ProductsRepository.allProducts = repository.fetchProducts()
+        ProductsRepository.mensClothingProducts = repository.fetchMensCloths()
+        ProductsRepository.electronicsProducts = repository.fetchElectronics()
+        ProductsRepository.womensClothingProducts = repository.fetchWomensCloths()
+        ProductsRepository.jeweleryProducts = repository.fetchJewelery()
+        Log.d("", "Fetching Complete!")
     }
 
     //Adds a Left card
@@ -49,22 +50,6 @@ class CardViewModel @Inject constructor(private val repository: CardRepository) 
         }
     }
 
-    //Gets all Right cards
-    suspend fun getRightCards(): MutableList<CardItem> {
-        return withContext(Dispatchers.IO) {
-            val rightCards = repository.getAllRightCards()
-            rightCards as MutableList<CardItem>
-        }
-    }
-
-    //Gets all Left cards
-    suspend fun getLeftCards(): MutableList<CardItem> {
-        return withContext(Dispatchers.IO) {
-            val leftCards = repository.getAllLeftCards()
-            leftCards as MutableList<CardItem>
-        }
-    }
-
     //Deletes all cards
     fun clearAllCards() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -72,11 +57,23 @@ class CardViewModel @Inject constructor(private val repository: CardRepository) 
         }
     }
 
-
-    suspend fun fetchProducts(): List<ProductResponse> {
-        //val products = repository.fetchProducts()
-        // Update the UI
-        return repository.fetchProducts()
+    fun fetchProducts(): List<ProductResponse> {
+        return ProductsRepository.allProducts
     }
 
+    fun fetchJeweleryProducts(): List<ProductResponse> {
+        return ProductsRepository.jeweleryProducts
+    }
+
+    fun fetchElectronics(): List<ProductResponse> {
+        return ProductsRepository.electronicsProducts
+    }
+
+    fun fetchWomensCloths(): List<ProductResponse> {
+        return ProductsRepository.womensClothingProducts
+    }
+
+    fun fetchMensCloths(): List<ProductResponse> {
+        return ProductsRepository.jeweleryProducts
+    }
 }

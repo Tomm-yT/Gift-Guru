@@ -4,7 +4,7 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.training.recycler.domain.entities.CardItem
 
-@Database(entities = [CardItem::class], version = 5)
+@Database(entities = [CardItem::class], version = 6)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun cardDao(): CardDao
 }
