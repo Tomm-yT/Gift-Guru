@@ -3,7 +3,6 @@ package com.training.recycler.presentation
 import android.graphics.Color
 import android.os.Bundle
 import android.util.DisplayMetrics
-import android.util.Log
 import android.widget.TextView
 import android.view.View
 import android.view.LayoutInflater
@@ -12,12 +11,10 @@ import android.widget.Button
 import android.widget.ImageView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
 import com.training.recycler.R
-import com.training.recycler.SplashScreenActivity
 import com.training.recycler.data.ProductResponse
 import com.training.recycler.domain.entities.CardItem
 import dagger.hilt.android.AndroidEntryPoint
@@ -33,37 +30,35 @@ class MainActivity : AppCompatActivity() {
 
 
     private lateinit var recyclerViewLeft: RecyclerView
-    private lateinit var adapterLeft: CardAdapter
+    private lateinit var adapter: CardAdapter
 
-    private var cardItemsLeft: MutableList<CardItem> = mutableListOf()
+    private var cardItems: MutableList<CardItem> = mutableListOf()
 
-    lateinit var all_products: List<ProductResponse>
-    lateinit var mens_clothing_products: List<ProductResponse>
-    lateinit var electronics_products: List<ProductResponse>
-    lateinit var womens_clothing_products: List<ProductResponse>
-    lateinit var jewelery_products: List<ProductResponse>
+    private lateinit var allProducts: List<ProductResponse>
+    private lateinit var mensClothingProducts: List<ProductResponse>
+    private lateinit var electronicsProducts: List<ProductResponse>
+    private lateinit var womensClothingProducts: List<ProductResponse>
+    private lateinit var jeweleryProducts: List<ProductResponse>
 
 
-    fun clearProducts() {
-        cardItemsLeft.clear()
-        adapterLeft.notifyDataSetChanged()
+    private fun clearProducts() {
+        cardItems.clear()
+        adapter.notifyDataSetChanged()
     }
 
-    fun loadAllProducts(){
+    private fun loadAllProducts(){
         CoroutineScope(Dispatchers.Main).launch {
 
-            val product_list = all_products
+            val product_list = allProducts
 
-            if (product_list != null) {
-                product_list.forEach { product ->
+            product_list.forEach { product ->
 
-                    val newCard = CardItem(text = product.title, imageUrl = product.image)
-                    viewModel?.addCardLeft(newCard)
+                val newCard = CardItem(text = product.title, imageUrl = product.image)
+                viewModel.addCardLeft(newCard)
 
-                    CoroutineScope(Dispatchers.Main).launch {
-                        cardItemsLeft.add(newCard)
-                        adapterLeft.notifyDataSetChanged()
-                    }
+                CoroutineScope(Dispatchers.Main).launch {
+                    cardItems.add(newCard)
+                    adapter.notifyDataSetChanged()
                 }
             }
         }
@@ -72,14 +67,14 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_layout)
-        getSupportActionBar()?.hide();
+        supportActionBar?.hide();
 
         //Initializes products from the repository
-        all_products = viewModel.fetchProducts()
-        mens_clothing_products = viewModel.fetchProducts()
-        electronics_products = viewModel.fetchProducts()
-        womens_clothing_products = viewModel.fetchProducts()
-        jewelery_products = viewModel.fetchProducts()
+        allProducts = viewModel.fetchProducts()
+        mensClothingProducts = viewModel.fetchProducts()
+        electronicsProducts = viewModel.fetchProducts()
+        womensClothingProducts = viewModel.fetchProducts()
+        jeweleryProducts = viewModel.fetchProducts()
 
         loadAllProducts()
 
@@ -125,26 +120,26 @@ class MainActivity : AppCompatActivity() {
             CoroutineScope(Dispatchers.Main).launch {
 
                 //Add Mens Clothing Products
-                viewModel?.fetchMensCloths()?.forEach { it ->
+                viewModel.fetchMensCloths().forEach { it ->
 
-                    val mens_clothing_product_card = CardItem(text = it.title, imageUrl = it.image)
-                    viewModel?.addCardLeft(mens_clothing_product_card)
+                    val mensClothingProductCard = CardItem(text = it.title, imageUrl = it.image)
+                    viewModel.addCardLeft(mensClothingProductCard)
 
                     CoroutineScope(Dispatchers.Main).launch {
-                        cardItemsLeft.add(mens_clothing_product_card)
-                        adapterLeft.notifyDataSetChanged()
+                        cardItems.add(mensClothingProductCard)
+                        adapter.notifyDataSetChanged()
                     }
                 }
 
                 //Add Electronics Products
-                viewModel?.fetchElectronics()?.forEach { it ->
+                viewModel.fetchElectronics().forEach { it ->
 
-                    val jewelery_product_card = CardItem(text = it.title, imageUrl = it.image)
-                    viewModel.addCardLeft(jewelery_product_card)
+                    val jeweleryProductCard = CardItem(text = it.title, imageUrl = it.image)
+                    viewModel.addCardLeft(jeweleryProductCard)
 
                     CoroutineScope(Dispatchers.Main).launch {
-                        cardItemsLeft.add(jewelery_product_card)
-                        adapterLeft.notifyDataSetChanged()
+                        cardItems.add(jeweleryProductCard)
+                        adapter.notifyDataSetChanged()
                     }
                 }
             }
@@ -166,36 +161,36 @@ class MainActivity : AppCompatActivity() {
                 //cardItemsLeft.removeFirst()
 
                 //Add Womens Clothing Products
-                viewModel?.fetchWomensCloths()?.forEach { it ->
+                viewModel.fetchWomensCloths().forEach { it ->
 
-                    val womens_clothing_product_card = CardItem(text = it.title, imageUrl = it.image)
-                    viewModel.addCardLeft(womens_clothing_product_card)
+                    val womensClothingProductCard = CardItem(text = it.title, imageUrl = it.image)
+                    viewModel.addCardLeft(womensClothingProductCard)
 
                     CoroutineScope(Dispatchers.Main).launch {
-                        cardItemsLeft.add(womens_clothing_product_card)
-                        adapterLeft.notifyDataSetChanged()
+                        cardItems.add(womensClothingProductCard)
+                        adapter.notifyDataSetChanged()
                     }
                 }
 
                 //Add Jewelery Products
-                viewModel?.fetchJeweleryProducts()?.forEach { it ->
+                viewModel.fetchJeweleryProducts().forEach { it ->
 
-                    val jewelery_product_card = CardItem(text = it.title, imageUrl = it.image)
-                    viewModel?.addCardLeft(jewelery_product_card)
+                    val jeweleryProductCard = CardItem(text = it.title, imageUrl = it.image)
+                    viewModel.addCardLeft(jeweleryProductCard)
 
                     CoroutineScope(Dispatchers.Main).launch {
-                        cardItemsLeft.add(jewelery_product_card)
-                        adapterLeft.notifyDataSetChanged()
+                        cardItems.add(jeweleryProductCard)
+                        adapter.notifyDataSetChanged()
                     }
                 }
             }
         }
 
-        adapterLeft = CardAdapter(cardItemsLeft)
+        adapter = CardAdapter(cardItems)
 
         recyclerViewLeft = findViewById(R.id.recyclerViewLeft)
         recyclerViewLeft.layoutManager = GridLayoutManager(this, 2)
-        recyclerViewLeft.adapter = adapterLeft
+        recyclerViewLeft.adapter = adapter
     }
 }
 
@@ -215,8 +210,6 @@ class CardViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 .into(imageView)
         }
     }
-
-
 }
 
 class CardAdapter(private val cardItems: MutableList<CardItem>) : RecyclerView.Adapter<CardViewHolder>() {
@@ -245,9 +238,6 @@ class CardAdapter(private val cardItems: MutableList<CardItem>) : RecyclerView.A
 
         return CardViewHolder(view)
     }
-
-
-
 
     override fun onBindViewHolder(holder: CardViewHolder, position: Int) {
         holder.bind(cardItems[position])
