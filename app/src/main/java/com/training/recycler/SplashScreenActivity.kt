@@ -14,6 +14,7 @@ import androidx.lifecycle.lifecycleScope
 import com.training.recycler.data.ProductResponse
 import com.training.recycler.domain.repositories.ProductsRepository
 import com.training.recycler.presentation.CardViewModel
+import com.training.recycler.presentation.LoginActivity
 import com.training.recycler.presentation.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -39,7 +40,7 @@ class SplashScreenActivity : AppCompatActivity() {
 
         // Optionally, after a delay or some conditions, move to the main activity
         Handler(Looper.getMainLooper()).postDelayed({
-            startActivity(Intent(this, MainActivity::class.java))
+            startActivity(Intent(this, LoginActivity::class.java))
             finish()
         }, 5000)
     }

@@ -1,5 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
-
 <androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -12,43 +10,34 @@
         android:layout_height="wrap_content">
 
         <Button
-            android:id="@+id/allProductsButton"
+            android:id="@+id/backButton"
             android:layout_width="100dp"
             android:layout_height="70dp"
-            android:background="#1B91CC"
-            android:text="All" />
+            android:background="#1978A8"
+            android:text="Back" />
+
+<!--TODO: Switch to constraint layout-->
 
         <Button
             android:id="@+id/mensProductsButton"
             android:layout_width="100dp"
             android:layout_height="70dp"
-            android:background="#1978A8"
-            android:text="Men" />
+            android:background="#1978A8" />
 
         <Button
             android:id="@+id/womensProductsButton"
             android:layout_width="100dp"
             android:layout_height="70dp"
-            android:background="#1978A8"
-            android:text="Women" />
+            android:background="#1978A8" />
 
         <Button
             android:id="@+id/saved"
             android:layout_width="100dp"
             android:layout_height="70dp"
-            android:background="#1978A8"
+            android:background="#1B91CC"
             android:text="Saved" />
 
-        <Button
-            android:id="@+id/clear"
-            android:layout_width="100dp"
-            android:layout_height="70dp"
-            android:background="#1978A8"
-            android:text="Clear" />
-
     </LinearLayout>
-
-
 
     <GridLayout
         android:layout_width="match_parent"
@@ -57,7 +46,6 @@
         android:columnCount="2"
         android:rowCount="1">
 
-
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
@@ -65,16 +53,13 @@
             android:orientation="vertical">
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerViewLeft"
+                android:id="@+id/savedRecyclerView"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:visibility="visible"
-                android:clipToPadding="false" />
+                android:clipToPadding="false"/>
         </LinearLayout>
 
-
     </GridLayout>
-
-
 
 </androidx.appcompat.widget.LinearLayoutCompat>

@@ -5,7 +5,7 @@ import com.training.recycler.domain.entities.CardItem
 
 interface CardRepository {
     suspend fun addCard(card: CardItem)
-    suspend fun getAllLeftCards(): List<CardItem>
+    suspend fun getAllCards(): List<CardItem>
     suspend fun clearAllCards()
     suspend fun fetchProducts(): List<ProductResponse>
     suspend fun fetchJewelery(): List<ProductResponse>

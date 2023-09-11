@@ -24,7 +24,7 @@ class CardRepositoryImpl @Inject constructor(private val cardDao: CardDao, priva
     }
 
 
-    override suspend fun getAllLeftCards(): List<CardItem> {
+    override suspend fun getAllCards(): List<CardItem> {
         return cardDao.getAllCards()
     }
 

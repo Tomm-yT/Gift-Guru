@@ -5,6 +5,7 @@ import android.content.Context
 import androidx.room.Room
 import com.training.recycler.data.AppDatabase
 import com.training.recycler.data.CardDao
+import com.training.recycler.data.UserProfileDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

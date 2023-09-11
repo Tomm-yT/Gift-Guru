@@ -24,9 +24,7 @@ import kotlinx.coroutines.CoroutineScope
 class CardViewModel @Inject constructor(private val repository: CardRepository) : ViewModel() {
 
 
-    private val currentCardItemsLeft = MutableLiveData<MutableList<CardItem>?>(mutableListOf(
-        CardItem(text = "Default Left Card", imageUrl = "TODO")
-    ))
+    private val currentCardItemsLeft = MutableLiveData<MutableList<CardItem>?>(mutableListOf())
 
     suspend fun loadProductsToRepo(){
         Log.d("", "Fetching now!!!!")
@@ -38,8 +36,12 @@ class CardViewModel @Inject constructor(private val repository: CardRepository) 
         Log.d("", "Fetching Complete!")
     }
 
+    suspend fun loadSaved(): List<CardItem> {
+        return repository.getAllCards()
+    }
+
     //Adds a Left card
-    fun addCardLeft(card: CardItem) {
+    fun saveCard(card: CardItem) {
         viewModelScope.launch(Dispatchers.IO) {
             repository.addCard(card)
             val updatedList = currentCardItemsLeft.value?.toMutableList()
@@ -74,6 +76,6 @@ class CardViewModel @Inject constructor(private val repository: CardRepository) 
     }
 
     fun fetchMensCloths(): List<ProductResponse> {
-        return ProductsRepository.jeweleryProducts
+        return ProductsRepository.mensClothingProducts
     }
 }

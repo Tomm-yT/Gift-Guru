@@ -1,8 +1,10 @@
 package com.training.recycler.presentation
 
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.util.DisplayMetrics
+import android.util.Log
 import android.widget.TextView
 import android.view.View
 import android.view.LayoutInflater
@@ -26,14 +28,16 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
+    val USERNAME = "RYAN"
+
     private val viewModel: CardViewModel by viewModels()
 
+    private var cardItems: MutableList<CardItem> = mutableListOf()
 
     private lateinit var recyclerViewLeft: RecyclerView
     private lateinit var adapter: CardAdapter
 
-    private var cardItems: MutableList<CardItem> = mutableListOf()
-
+    //Product object lists
     private lateinit var allProducts: List<ProductResponse>
     private lateinit var mensClothingProducts: List<ProductResponse>
     private lateinit var electronicsProducts: List<ProductResponse>
@@ -51,10 +55,9 @@ class MainActivity : AppCompatActivity() {
 
             val product_list = allProducts
 
-            product_list.forEach { product ->
+            product_list.forEach { it ->
 
-                val newCard = CardItem(text = product.title, imageUrl = product.image)
-                viewModel.addCardLeft(newCard)
+                val newCard = CardItem(username = USERNAME, title = it.title, price = it.price, imageUrl = it.image)
 
                 CoroutineScope(Dispatchers.Main).launch {
                     cardItems.add(newCard)
@@ -89,6 +92,11 @@ class MainActivity : AppCompatActivity() {
 //            adapterRight.notifyDataSetChanged()
 //        }
 
+        findViewById<Button>(R.id.saved).setOnClickListener {
+            val intent = Intent(this, SavedListActivity::class.java)
+            startActivity(intent)
+        }
+
         findViewById<Button>(R.id.clear).setOnClickListener {
 
             clearProducts()
@@ -122,8 +130,7 @@ class MainActivity : AppCompatActivity() {
                 //Add Mens Clothing Products
                 viewModel.fetchMensCloths().forEach { it ->
 
-                    val mensClothingProductCard = CardItem(text = it.title, imageUrl = it.image)
-                    viewModel.addCardLeft(mensClothingProductCard)
+                    val mensClothingProductCard = CardItem(username = USERNAME, title = it.title, price = it.price, imageUrl = it.image)
 
                     CoroutineScope(Dispatchers.Main).launch {
                         cardItems.add(mensClothingProductCard)
@@ -134,8 +141,7 @@ class MainActivity : AppCompatActivity() {
                 //Add Electronics Products
                 viewModel.fetchElectronics().forEach { it ->
 
-                    val jeweleryProductCard = CardItem(text = it.title, imageUrl = it.image)
-                    viewModel.addCardLeft(jeweleryProductCard)
+                    val jeweleryProductCard = CardItem(username = USERNAME,title = it.title, price = it.price, imageUrl = it.image)
 
                     CoroutineScope(Dispatchers.Main).launch {
                         cardItems.add(jeweleryProductCard)
@@ -158,13 +164,10 @@ class MainActivity : AppCompatActivity() {
 
             CoroutineScope(Dispatchers.Main).launch {
 
-                //cardItemsLeft.removeFirst()
-
                 //Add Womens Clothing Products
                 viewModel.fetchWomensCloths().forEach { it ->
 
-                    val womensClothingProductCard = CardItem(text = it.title, imageUrl = it.image)
-                    viewModel.addCardLeft(womensClothingProductCard)
+                    val womensClothingProductCard = CardItem(username = USERNAME,title = it.title, price = it.price, imageUrl = it.image)
 
                     CoroutineScope(Dispatchers.Main).launch {
                         cardItems.add(womensClothingProductCard)
@@ -175,8 +178,7 @@ class MainActivity : AppCompatActivity() {
                 //Add Jewelery Products
                 viewModel.fetchJeweleryProducts().forEach { it ->
 
-                    val jeweleryProductCard = CardItem(text = it.title, imageUrl = it.image)
-                    viewModel.addCardLeft(jeweleryProductCard)
+                    val jeweleryProductCard = CardItem(username = USERNAME, title = it.title, price = it.price, imageUrl = it.image)
 
                     CoroutineScope(Dispatchers.Main).launch {
                         cardItems.add(jeweleryProductCard)
@@ -186,7 +188,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        adapter = CardAdapter(cardItems)
+        adapter = CardAdapter(cardItems, viewModel)
 
         recyclerViewLeft = findViewById(R.id.recyclerViewLeft)
         recyclerViewLeft.layoutManager = GridLayoutManager(this, 2)
@@ -197,22 +199,29 @@ class MainActivity : AppCompatActivity() {
 
 
 
-class CardViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-    private val textView: TextView = view.findViewById(R.id.cardTextView)
+class CardViewHolder(view: View, private val viewModel: CardViewModel) : RecyclerView.ViewHolder(view) {
+    private val titleView: TextView = view.findViewById(R.id.productTitle)
+    private val priceView: TextView = view.findViewById(R.id.productPrice)
     private val imageView: ImageView = view.findViewById(R.id.productImage)
 
     fun bind(cardItem: CardItem) {
-        textView.text = cardItem.text
+        titleView.text = cardItem.title
+        priceView.text = "Price: $"+cardItem.price.toString()
 
         if(cardItem.imageUrl != "TODO") {
             Picasso.get()
                 .load(cardItem.imageUrl)
                 .into(imageView)
         }
+
+        itemView.setOnClickListener {
+            Log.d("", "You clicked: ${cardItem.title}")
+            viewModel.saveCard(cardItem)
+        }
     }
 }
 
-class CardAdapter(private val cardItems: MutableList<CardItem>) : RecyclerView.Adapter<CardViewHolder>() {
+class CardAdapter(private val cardItems: MutableList<CardItem>, private val viewModel: CardViewModel) : RecyclerView.Adapter<CardViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CardViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.card_item, parent, false)
@@ -236,7 +245,7 @@ class CardAdapter(private val cardItems: MutableList<CardItem>) : RecyclerView.A
         // Set the modified layout params back to the view
         view.layoutParams = existingParams
 
-        return CardViewHolder(view)
+        return CardViewHolder(view, viewModel)
     }
 
     override fun onBindViewHolder(holder: CardViewHolder, position: Int) {

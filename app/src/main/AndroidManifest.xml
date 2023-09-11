@@ -24,8 +24,9 @@
             </intent-filter>
         </activity>
 
+
         <activity
-            android:name=".presentation.MainActivity"
+            android:name=".presentation.MainActivity" android:launchMode="singleTop"
             android:exported="true"
             android:label="Tom's Views App"
             android:theme="@style/Theme.AppCompat">
@@ -34,6 +35,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".presentation.SavedListActivity"/>
+        <activity android:name=".presentation.LoginActivity"></activity>
     </application>
 
 </manifest>
