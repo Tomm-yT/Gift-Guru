@@ -1,6 +1,7 @@
 package com.training.recycler.presentation
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -23,12 +24,17 @@ class SavedListActivity : AppCompatActivity() {
     private lateinit var savedRecyclerView: RecyclerView
     private lateinit var adapter: CardAdapter
 
+    var USERNAME = ""
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.saved_list_layout)
         supportActionBar?.hide()
 
-        adapter = CardAdapter(cardItems, viewModel)
+        val usernameFromLogin = intent.getStringExtra("USERNAME_KEY") ?: "DefaultUsername"
+        USERNAME = usernameFromLogin
+
+        adapter = CardAdapter(USERNAME, cardItems, viewModel, true)
         savedRecyclerView = findViewById(R.id.savedRecyclerView)
         savedRecyclerView.layoutManager = GridLayoutManager(this, 2)
         savedRecyclerView.adapter = adapter
@@ -40,13 +46,23 @@ class SavedListActivity : AppCompatActivity() {
         }
     }
 
+
     private fun loadSavedItems() {
         CoroutineScope(Dispatchers.IO).launch {
+
+            Log.d("", "Showing saved with $USERNAME")
+
             viewModel.loadSaved().forEach { it ->
-                if (it.username == "RYAN") {
+                if (it.username == USERNAME) {
+
                     CoroutineScope(Dispatchers.Main).launch {
                         cardItems.add(it)
                         adapter.notifyDataSetChanged()
+
+                        val viewHolder = savedRecyclerView.findViewHolderForAdapterPosition(cardItems.size - 1)
+                        if (viewHolder is CardViewHolder) {
+                            viewHolder.adjustSaveView()
+                        }
                     }
                 }
             }

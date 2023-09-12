@@ -11,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.ToggleButton
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
@@ -28,14 +29,13 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
-    val USERNAME = "RYAN"
-
+    var USERNAME = ""
     private val viewModel: CardViewModel by viewModels()
 
     private var cardItems: MutableList<CardItem> = mutableListOf()
 
     private lateinit var recyclerViewLeft: RecyclerView
-    private lateinit var adapter: CardAdapter
+    lateinit var adapter: CardAdapter
 
     //Product object lists
     private lateinit var allProducts: List<ProductResponse>
@@ -52,6 +52,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun loadAllProducts(){
         CoroutineScope(Dispatchers.Main).launch {
+
+
+            Log.d("", "Using $USERNAME")
 
             val product_list = allProducts
 
@@ -71,6 +74,11 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_layout)
         supportActionBar?.hide();
+
+        val usernameFromLogin = intent.getStringExtra("USERNAME_KEY") ?: "DefaultUsername"
+        USERNAME = usernameFromLogin
+
+        viewModel.setSelectedProfile(USERNAME)
 
         //Initializes products from the repository
         allProducts = viewModel.fetchProducts()
@@ -93,7 +101,9 @@ class MainActivity : AppCompatActivity() {
 //        }
 
         findViewById<Button>(R.id.saved).setOnClickListener {
+
             val intent = Intent(this, SavedListActivity::class.java)
+            intent.putExtra("USERNAME_KEY", USERNAME)
             startActivity(intent)
         }
 
@@ -188,7 +198,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        adapter = CardAdapter(cardItems, viewModel)
+        adapter = CardAdapter(USERNAME, cardItems, viewModel)
 
         recyclerViewLeft = findViewById(R.id.recyclerViewLeft)
         recyclerViewLeft.layoutManager = GridLayoutManager(this, 2)
@@ -199,12 +209,18 @@ class MainActivity : AppCompatActivity() {
 
 
 
-class CardViewHolder(view: View, private val viewModel: CardViewModel) : RecyclerView.ViewHolder(view) {
+class CardViewHolder(private val username: String, view: View, private val viewModel: CardViewModel) : RecyclerView.ViewHolder(view) {
     private val titleView: TextView = view.findViewById(R.id.productTitle)
     private val priceView: TextView = view.findViewById(R.id.productPrice)
     private val imageView: ImageView = view.findViewById(R.id.productImage)
+    private val saveView: ToggleButton = view.findViewById(R.id.saveProduct)
 
-    fun bind(cardItem: CardItem) {
+    fun adjustSaveView() {
+        saveView.setBackgroundResource(R.drawable.wishlist_icon)
+    }
+
+
+    fun bind(cardItem: CardItem, isSavedList: Boolean = false) {
         titleView.text = cardItem.title
         priceView.text = "Price: $"+cardItem.price.toString()
 
@@ -216,14 +232,52 @@ class CardViewHolder(view: View, private val viewModel: CardViewModel) : Recycle
 
         itemView.setOnClickListener {
             Log.d("", "You clicked: ${cardItem.title}")
-            viewModel.saveCard(cardItem)
+            //viewModel.saveCard(cardItem)
         }
+
+        saveView.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) {
+                Log.d("", "You saved!: ${cardItem.title}")
+                saveView.setBackgroundResource(R.drawable.closed_heart_icon)
+                viewModel.saveCard(cardItem)
+            } else {
+                saveView.setBackgroundResource(R.drawable.open_heart_icon)
+
+                // Remove from Room database
+                viewModel.deleteCard(cardItem)
+            }
+        }
+
+        if(isSavedList){
+            saveView.setBackgroundResource(R.drawable.closed_heart_icon)
+        }
+
+        if(isSavedList){
+            saveView.setOnCheckedChangeListener { buttonView, isChecked ->
+//                    saveView.setBackgroundResource(R.drawable.closed_heart_icon)
+//                    viewModel.saveCard(cardItem)
+                  Log.d("", "You DELETED!: ${cardItem.title}")
+                  viewModel.deleteCardByName(username, cardItem)
+            }
+        }
+
     }
 }
 
-class CardAdapter(private val cardItems: MutableList<CardItem>, private val viewModel: CardViewModel) : RecyclerView.Adapter<CardViewHolder>() {
+class CardAdapter(
+    private val username: String,
+    private val items: List<CardItem>,
+    private val viewModel: CardViewModel,
+    private val isSavedList: Boolean = false) : RecyclerView.Adapter<CardViewHolder>() {
+
+//    fun removeAt(position: Int) {
+//        cardItems.removeAt(position)
+//        notifyItemRemoved(position)
+//    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CardViewHolder {
+
+
         val view = LayoutInflater.from(parent.context).inflate(R.layout.card_item, parent, false)
 
         // Get the existing layout params for the view
@@ -245,12 +299,12 @@ class CardAdapter(private val cardItems: MutableList<CardItem>, private val view
         // Set the modified layout params back to the view
         view.layoutParams = existingParams
 
-        return CardViewHolder(view, viewModel)
+        return CardViewHolder(username, view, viewModel)
     }
 
     override fun onBindViewHolder(holder: CardViewHolder, position: Int) {
-        holder.bind(cardItems[position])
+        holder.bind(items[position], isSavedList)
     }
 
-    override fun getItemCount() = cardItems.size
+    override fun getItemCount() = items.size
 }

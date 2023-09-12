@@ -23,6 +23,13 @@ class CardRepositoryImpl @Inject constructor(private val cardDao: CardDao, priva
         cardDao.insert(card)
     }
 
+    override suspend fun deleteCard(card: CardItem) {
+        cardDao.delete(card)
+    }
+
+    override suspend fun deleteCardByUsernameAndTitle(username: String, title: String) {
+        cardDao.deleteByUsernameAndTitle(username, title)
+    }
 
     override suspend fun getAllCards(): List<CardItem> {
         return cardDao.getAllCards()

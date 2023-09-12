@@ -23,6 +23,7 @@ import kotlinx.coroutines.CoroutineScope
 @HiltViewModel
 class CardViewModel @Inject constructor(private val repository: CardRepository) : ViewModel() {
 
+    var selectedProfileVM = ""
 
     private val currentCardItemsLeft = MutableLiveData<MutableList<CardItem>?>(mutableListOf())
 
@@ -40,7 +41,27 @@ class CardViewModel @Inject constructor(private val repository: CardRepository) 
         return repository.getAllCards()
     }
 
-    //Adds a Left card
+    fun setSelectedProfile(username: String) {
+        selectedProfileVM = username
+    }
+
+    fun deleteCard(card: CardItem) {
+        viewModelScope.launch(Dispatchers.IO) {
+            // Assuming USERNAME is a constant available in this context
+            Log.d("VIEWMODEL", "View Model is deleting with $selectedProfileVM")
+            repository.deleteCardByUsernameAndTitle(selectedProfileVM, card.title)
+        }
+    }
+
+    fun deleteCardByName(username: String, card: CardItem) {
+        viewModelScope.launch(Dispatchers.IO) {
+            // Assuming USERNAME is a constant available in this context
+            Log.d("VIEWMODEL", "View Model is deleting with $selectedProfileVM")
+            repository.deleteCardByUsernameAndTitle(username, card.title)
+        }
+    }
+
+    //Adds a card
     fun saveCard(card: CardItem) {
         viewModelScope.launch(Dispatchers.IO) {
             repository.addCard(card)

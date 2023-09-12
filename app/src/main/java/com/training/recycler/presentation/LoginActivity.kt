@@ -1,14 +1,21 @@
 package com.training.recycler.presentation
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.training.recycler.R
@@ -28,6 +35,39 @@ class LoginActivity : AppCompatActivity() {
     @Inject
     lateinit var userProfileDao: UserProfileDao
 
+    fun launchAppWithProfile(username : String){
+
+        val intent = Intent(this, MainActivity::class.java)
+        intent.putExtra("USERNAME_KEY", username)
+        startActivity(intent)
+        finish() // Closes LoginActivity so it's not on the back stack
+    }
+
+    lateinit var userProfiles : MutableList<UserProfile>
+    lateinit var profileAdapter : ProfileAdapter
+
+
+    fun deleteProfile(usernameToDelete: String, userProfiles: MutableList<UserProfile>, adapter: ProfileAdapter, userProfileDao: UserProfileDao) {
+
+        //Remove from the data source
+        val iterator = userProfiles.iterator()
+        while(iterator.hasNext()) {
+            val userProfile = iterator.next()
+            if(userProfile.username == usernameToDelete) {
+                iterator.remove()
+
+                //Delete from the database
+                CoroutineScope(Dispatchers.IO).launch {
+                    userProfileDao.deleteProfile(userProfile) // Assuming this is the correct DAO method
+                }
+                break
+            }
+        }
+
+        //Notify adapter of changes
+        adapter.notifyDataSetChanged()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.login_screen)
@@ -35,21 +75,15 @@ class LoginActivity : AppCompatActivity() {
 
 
 
-        val userProfiles = mutableListOf<UserProfile>()
-        val profileAdapter = ProfileAdapter(userProfiles)
+        userProfiles = mutableListOf<UserProfile>()
+        profileAdapter = ProfileAdapter(this, userProfiles)
+
 
         val profilesRecyclerView: RecyclerView = findViewById(R.id.profilesRecyclerView)
         profilesRecyclerView.layoutManager = GridLayoutManager(this, 2)  // 2 columns in grid
         profilesRecyclerView.adapter = profileAdapter
 
-
-
-
-
-
-        // When you add a new profile:
-//        userProfiles.add(UserProfile(username = "NewUser", icon = ""))
-//        profileAdapter.notifyDataSetChanged()
+        profileAdapter.notifyDataSetChanged()
 
         fun loadProfilesOnStartup() {
             CoroutineScope(Dispatchers.IO).launch {
@@ -63,59 +97,77 @@ class LoginActivity : AppCompatActivity() {
             }
         }
 
-
+        //CLEAR PROFILES FOR TESTING
         CoroutineScope(Dispatchers.IO).launch {
             //userProfileDao.deleteAllProfiles()
         }
 
         loadProfilesOnStartup()
 
+        findViewById<CardView>(R.id.defaultProfile).setOnClickListener {
 
 
+            val editText = EditText(this)
+            val dialog = AlertDialog.Builder(this)
+                .setTitle("Creating New Profile")
+                .setMessage("Enter the name of the new profile.")
+                .setView(editText)
+                .setPositiveButton("OK") { dialog, _ ->
+                    val inputText = editText.text.toString()
+                    Toast.makeText(applicationContext, "Profile created: $inputText", Toast.LENGTH_LONG).show()
 
-        findViewById<Button>(R.id.createButton).setOnClickListener {
-            GlobalScope.launch(Dispatchers.IO) { // Use Dispatchers.IO for background thread operations
-                userProfileDao.insertProfile(UserProfile(username = "JohnDoe3", icon = "J"))
-            }
-            userProfiles.add(UserProfile(username = "JohnDoe", icon = "J"))
-            profileAdapter.notifyDataSetChanged()
-        }
+                    GlobalScope.launch(Dispatchers.IO) { // Use Dispatchers.IO for background thread operations
+                        userProfileDao.insertProfile(UserProfile(username = inputText, icon = inputText[0].toString()))
+                    }
+                    userProfiles.add(UserProfile(username = inputText, icon = inputText[0].toString()))
+                    profileAdapter.notifyDataSetChanged()
 
-        val loginButton = findViewById<TextView>(R.id.loginButton)
-        loginButton.setOnClickListener {
-            // Here you can perform your login logic (validation, API calls, etc.)
-            // Once the login is successful, start the MainActivity
-
-
-
-
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
-            finish() // Close LoginActivity so it's not on the back stack
+                    dialog.dismiss()
+                }
+                .setNegativeButton("Cancel") { dialog, _ -> dialog.dismiss() }
+                .create()
+            dialog.show()
         }
     }
 }
 
 
-class ProfileAdapter(private var profiles: List<UserProfile>) :
+class ProfileAdapter(val context: Context, private var profiles: List<UserProfile>) :
     RecyclerView.Adapter<ProfileAdapter.ProfileViewHolder>() {
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProfileViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.login_profile, parent, false)
-        return ProfileViewHolder(view)
+        return ProfileViewHolder(context, view)
     }
 
     override fun onBindViewHolder(holder: ProfileViewHolder, position: Int) {
         val userProfile = profiles[position]
         holder.profileName.text = userProfile.username
+        holder.profileIcon.text = userProfile.icon
     }
 
     override fun getItemCount(): Int = profiles.size
 
-    class ProfileViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val cardView: CardView = itemView.findViewById(R.id.cardView)
+    class ProfileViewHolder(context: Context, itemView: View) : RecyclerView.ViewHolder(itemView) {
         val profileName: TextView = itemView.findViewById(R.id.profileName)
+        val profileIcon: TextView = itemView.findViewById(R.id.profile_icon)
+        val deleteProfile: ImageView = itemView.findViewById(R.id.deleteProfile)
+
+        init {
+            val activity = context as LoginActivity
+
+            itemView.setOnClickListener {
+
+                Log.d("Login Activity:", "Launching app under profile: ${profileName.text}")
+                activity.launchAppWithProfile(profileName.text.toString())
+            }
+
+            deleteProfile.setOnClickListener {
+                activity.deleteProfile(profileName.text.toString(), activity.userProfiles, activity.profileAdapter, activity.userProfileDao)
+                Log.d("Login Activity:", "Deleting profile: ${profileName.text}")
+            }
+        }
     }
 }
 
