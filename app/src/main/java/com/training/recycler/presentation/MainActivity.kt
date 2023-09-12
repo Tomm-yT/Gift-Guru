@@ -258,6 +258,13 @@ class CardViewHolder(private val username: String, view: View, private val viewM
 //                    viewModel.saveCard(cardItem)
                   Log.d("", "You DELETED!: ${cardItem.title}")
                   viewModel.deleteCardByName(username, cardItem)
+
+                // Remove from the RecyclerView
+                (itemView.parent as? RecyclerView)?.adapter?.let {
+                    if (it is CardAdapter) {
+                        it.removeItem(cardItem)
+                    }
+                }
             }
         }
 
@@ -274,6 +281,14 @@ class CardAdapter(
 //        cardItems.removeAt(position)
 //        notifyItemRemoved(position)
 //    }
+
+    fun removeItem(cardItem: CardItem) {
+        val index = items.indexOf(cardItem)
+        if (index != -1) {
+            (items as MutableList<CardItem>).removeAt(index)
+            notifyItemRemoved(index)
+        }
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CardViewHolder {
 
