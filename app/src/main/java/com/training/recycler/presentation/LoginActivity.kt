@@ -114,7 +114,7 @@ class LoginActivity : AppCompatActivity() {
                 .setView(editText)
                 .setPositiveButton("OK") { dialog, _ ->
                     val inputText = editText.text.toString()
-                    Toast.makeText(applicationContext, "Profile created: $inputText", Toast.LENGTH_LONG).show()
+                    //Toast.makeText(applicationContext, "Profile created: $inputText", Toast.LENGTH_LONG).show()
 
                     GlobalScope.launch(Dispatchers.IO) { // Use Dispatchers.IO for background thread operations
                         userProfileDao.insertProfile(UserProfile(username = inputText, icon = inputText[0].toString()))

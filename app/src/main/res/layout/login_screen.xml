@@ -11,6 +11,7 @@
         android:layout_width="180dp"
         android:layout_height="250dp"
         app:cardCornerRadius="20dp"
+        android:layout_marginTop="10dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -22,38 +23,25 @@
             android:background="#1B91CC">
 
 
-            <androidx.cardview.widget.CardView
+            <ImageView
                 android:id="@+id/profile_icon"
-                android:layout_width="170dp"
-                android:layout_height="170dp"
-                app:cardCornerRadius="100dp"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:text="+"
-                    android:gravity="center"
-                    android:textColor="#1B91CC"
-                    android:textSize="100dp"
-                    android:background="#FFFFFF">
-                </TextView>
-
-            </androidx.cardview.widget.CardView>
+                android:layout_width="190dp"
+                android:layout_height="195dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/splash_icon" />
 
             <TextView
                 android:id="@+id/loginButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Create User"
+                android:text="Add Profile"
                 android:textSize="30dp"
-                android:layout_marginTop="24dp"
+
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/profile_icon">
-
             </TextView>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
